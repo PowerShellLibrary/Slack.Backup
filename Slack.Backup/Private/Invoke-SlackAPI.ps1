@@ -21,7 +21,10 @@ function Invoke-SlackAPI {
         if ($Parameters.Keys.Count -gt 0) {
             $qs = [System.Web.HttpUtility]::ParseQueryString([String]::Empty)
             foreach ($key  in $Parameters.Keys) {
-                $qs.Add($key, $Parameters.$key)
+                $value = $Parameters.$key
+                if ($value) {
+                    $qs.Add($key, $value)
+                }
             }
             $uriRequest = [System.UriBuilder]$uri
             $uriRequest.Query = $qs.ToString()
@@ -34,7 +37,7 @@ function Invoke-SlackAPI {
             $response
         }
         else {
-            Write-Error $response.error
+            Write-Error "$response.error"
         }
     }
 
