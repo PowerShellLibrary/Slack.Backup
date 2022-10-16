@@ -9,6 +9,7 @@
     Description       = 'PowerShell module for the Slack backup.'
     PowerShellVersion = '5.0'
     FunctionsToExport = '*'
+    RequiredAssemblies = @('System.Web')
     PrivateData       = @{
         PSData = @{
         }
