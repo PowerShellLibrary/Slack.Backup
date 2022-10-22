@@ -23,12 +23,13 @@ function Invoke-FilesBackup {
             $start = Convert-DateToEpoch (Get-Date "2000-01-01")
         }
 
-        $files = Get-FilesList -Token $key -TsFrom $start
+        $files = Get-FilesList -Token $Token -TsFrom $start
         if ($files.ok) {
             foreach ($f in $files | Select-Object -ExpandProperty files) {
                 $ext = $f.filetype
                 $path = "$backupLoc/$($f.id)"
-                Get-SlackFile -Token $key -Uri $f.url_private | Set-Content "$path.$ext" -AsByteStream
+                $slackFile = Get-SlackFile -Token $Token -Uri $f.url_private
+                [System.IO.File]::WriteAllBytes("$path.$ext", $slackFile)
                 $f | ConvertTo-Json -Depth 10 | Set-Content -Path "$path.json"
             }
         }
