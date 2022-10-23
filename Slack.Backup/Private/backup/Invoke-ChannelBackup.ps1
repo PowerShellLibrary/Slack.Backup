@@ -48,7 +48,7 @@ function Invoke-ChannelBackup {
         }
 
         if ($newMessages.Count -gt 0) {
-            $messages += $newMessages
+            $messages += $newMessages | % { Invoke-MessageProcessingPipeline -SlackMessage $_ }
             $messages | Sort-Object -Property @{Expression = { [double]$_.ts } } | ConvertTo-Json -Depth 100 | Set-Content -Path $Location
         }
     }

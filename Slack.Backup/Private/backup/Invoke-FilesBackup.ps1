@@ -29,8 +29,9 @@ function Invoke-FilesBackup {
                 $ext = $f.filetype
                 $path = "$backupLoc/$($f.id)"
                 $slackFile = Get-SlackFile -Token $Token -Uri $f.url_private
+                $slackFile = Invoke-FileDataProcessingPipeline -SlackFile $slackFile
                 [System.IO.File]::WriteAllBytes("$path.$ext", $slackFile)
-                $f | ConvertTo-Json -Depth 10 | Set-Content -Path "$path.json"
+                $f | Invoke-FileProcessingPipeline | ConvertTo-Json -Depth 10 | Set-Content -Path "$path.json"
             }
         }
     }
