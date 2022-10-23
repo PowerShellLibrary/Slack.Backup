@@ -16,7 +16,7 @@ function Invoke-ChannelsBackup {
         $channels | ConvertTo-Json -Depth 100 | Set-Content -Path "$backupLoc\channels.json"
 
         $channels  | % {
-            $channelBackupPath = "$backupRoot\channels\$($_.id).json"
+            $channelBackupPath = "$Location\channels\$($_.id).json"
             Invoke-ChannelBackup -Token $Token -ChannelId $_.id -Location $channelBackupPath
         }
     }

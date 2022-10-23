@@ -20,14 +20,14 @@ function Invoke-ChannelBackup {
             $start = $last.ts
         }
         Write-Verbose "Get-ChannelNewMessages [$ChannelId][$(Convert-EpochToDate $Start)]"
-        [array]$newMessages = Get-FullHistory -Token $key -ChannelId $ChannelId -Start $start
+        [array]$newMessages = Get-FullHistory -Token $Token -ChannelId $ChannelId -Start $start
 
         $ids = $messages.client_msg_id
         $threadDeep = Convert-DateToEpoch (Get-Date).AddDays(-90)
         $threaded = $messages | ? { $_.reply_count -ne $null } | ? { [double]$_.ts -le $start -and [double]$_.ts -gt $threadDeep }
         $threaded | % {
             $om = $_
-            $response = Get-Thread -Token $key -ChannelId $ChannelId -ThreadTs $om.thread_ts
+            $response = Get-Thread -Token $Token -ChannelId $ChannelId -ThreadTs $om.thread_ts
             if ($response.ok -eq $true) {
                 $replies = $response.messages
                 $nm = $replies | Select-Object -First 1
