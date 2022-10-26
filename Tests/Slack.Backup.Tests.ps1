@@ -10,7 +10,9 @@ $script:processorInvoked = $false
 function Invoke-FileDataProcessorMock {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true )]
-        [byte[]]$SlackFile
+        [byte[]]$SlackFile,
+        [Parameter(Mandatory = $true, Position = 1 )]
+        [System.Object]$Metadata
     )
     $script:processorInvoked = $true
     $SlackFile
