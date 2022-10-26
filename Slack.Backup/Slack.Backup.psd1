@@ -1,7 +1,7 @@
 
 @{
     RootModule        = 'Slack.Backup.psm1'
-    ModuleVersion     = '1.0.0'
+    ModuleVersion     = '1.1.0'
     GUID              = '5fca212b-de20-40cb-ba38-e6114263bfaa'
     Author            = 'Alan Plocieniak'
     CompanyName       = 'Alan Plocieniak'
