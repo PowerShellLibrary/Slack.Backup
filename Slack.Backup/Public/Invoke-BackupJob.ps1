@@ -17,6 +17,8 @@ function Invoke-BackupJob {
 
     process {
         Write-Verbose "Cmdlet Invoke-BackupJob - Process"
+        Assert-Path $Location
+        $Location = Resolve-Path -LiteralPath $Location | Select-Object -ExpandProperty Path
         if ($Files) {
             Invoke-FilesBackup -Token $Token -Location $Location
         }
