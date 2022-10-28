@@ -22,23 +22,24 @@ function Invoke-ChannelBackup {
         Write-Verbose "Get-ChannelNewMessages [$ChannelId][$(Convert-EpochToDate $Start)]"
         [array]$newMessages = Get-FullHistory -Token $Token -ChannelId $ChannelId -Start $start
 
-        $ids = $messages.client_msg_id
+        $ids = $messages.ts
         $threadDeep = Convert-DateToEpoch (Get-Date).AddDays(-90)
-        $threaded = $messages | ? { $_.reply_count -ne $null } | ? { [double]$_.ts -le $start -and [double]$_.ts -gt $threadDeep }
+        $threaded = $messages | ? { $_.latest_reply -ne $null } | ? { [double]$_.ts -le $start -and [double]$_.ts -gt $threadDeep }
         $threaded | % {
             $om = $_
-            $response = Get-Thread -Token $Token -ChannelId $ChannelId -ThreadTs $om.thread_ts
+            $response = Get-Thread -Token $Token -ChannelId $ChannelId -ThreadTs $om.ts
             if ($response.ok -eq $true) {
                 $replies = $response.messages
                 $nm = $replies | Select-Object -First 1
                 if ($nm -and ([double]$nm.latest_reply) -gt ([double]$om.latest_reply)) {
                     Write-Verbose "Update parent message: $($om.client_msg_id)"
                     $index = $messages.IndexOf($om)
-                    $messages.Item($index) = $nm
+                    $nmp = Invoke-MessageProcessingPipeline -SlackMessage $nm
+                    $messages.Item($index) = $nmp
 
                     $replies | Select-Object -Skip 1 | % {
                         $m = $_
-                        if ($ids.Contains($m.client_msg_id) -eq $false) {
+                        if ($ids.Contains($m.ts) -eq $false) {
                             Write-Verbose "Adding new thread meassage: $($m.client_msg_id)"
                             $newMessages += $m
                         }
