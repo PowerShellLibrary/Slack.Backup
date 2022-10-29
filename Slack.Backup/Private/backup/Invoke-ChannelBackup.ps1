@@ -20,6 +20,7 @@ function Invoke-ChannelBackup {
             $start = $last.ts
         }
         Write-Verbose "Get-ChannelNewMessages [$ChannelId][$(Convert-EpochToDate $Start)]"
+        Write-Progress -Activity "Get-ChannelNewMessages [$ChannelId][$(Convert-EpochToDate $Start)]" -Status 'Get-FullHistory'
         [array]$newMessages = Get-FullHistory -Token $Token -ChannelId $ChannelId -Start $start
 
         $ids = $messages.ts
@@ -49,7 +50,12 @@ function Invoke-ChannelBackup {
         }
 
         if ($newMessages.Count -gt 0) {
-            $messages += $newMessages | % { Invoke-MessageProcessingPipeline -SlackMessage $_ }
+            $cur = 0
+            $messages += $newMessages | % {
+                $perc = ((100.0 * $cur++) / $newMessages.Count)
+                Write-Progress -Activity "Message $($_.ts) FROM $ChannelID" -PercentComplete $perc -Status "Running MessageProcessingPipeline"
+                Invoke-MessageProcessingPipeline -SlackMessage $_
+            }
             $messages | Sort-Object -Property @{Expression = { [double]$_.ts } } | ConvertTo-Json -Depth 100 | Set-Content -Path $Location
         }
     }

@@ -25,13 +25,21 @@ function Invoke-FilesBackup {
 
         $files = Get-FilesList -Token $Token -TsFrom $start
         if ($files.ok) {
-            foreach ($f in $files | Select-Object -ExpandProperty files) {
+            $cur = 0
+            $files = $files | Select-Object -ExpandProperty files
+            foreach ($f in $files) {
                 $ext = $f.filetype
                 $path = "$backupLoc/$($f.id)"
+                $perc = ((100.0 * $cur++) / $files.Count)
+                Write-Progress -Activity "File $($f.id)" -PercentComplete $perc -Status "Downloading"
                 $slackFile = Get-SlackFile -Token $Token -Uri $f.url_private
+
+                Write-Progress -Activity "File $($f.id)" -PercentComplete $perc -Status "Running FileDataProcessingPipeline"
                 $slackFile = Invoke-FileDataProcessingPipeline -SlackFile $slackFile -Metadata $f
                 [System.IO.File]::WriteAllBytes("$path.$ext", $slackFile)
                 Remove-Variable -Name slackFile
+
+                Write-Progress -Activity "File $($f.id)" -PercentComplete $perc -Status "Running FileProcessingPipeline"
                 $f | Invoke-FileProcessingPipeline | ConvertTo-Json -Depth 10 | Set-Content -Path "$path.json"
             }
         }
