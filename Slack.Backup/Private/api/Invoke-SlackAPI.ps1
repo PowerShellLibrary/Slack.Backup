@@ -31,7 +31,17 @@ function Invoke-SlackAPI {
             $uri = $uriRequest.ToString()
         }
 
-        $response = Invoke-WebRequest -Method Get -Uri $uri -Headers $headers
+        try {
+            $response = Invoke-WebRequest -Method Get -Uri $uri -Headers $headers
+        }
+        catch [Microsoft.PowerShell.Commands.HttpResponseException] {
+            if ($_.Exception.Response.StatusCode -eq 429) {
+                [int] $delay = [int](($_.Exception.Response.Headers | Where-Object Key -eq 'Retry-After').Value[0])
+                Write-Host -Message "Retry caught, delaying $delay s"
+                Start-Sleep -Seconds $delay
+                return Invoke-SlackAPI $Method $Token $Parameters
+            }
+        }
         $response = $response.Content | ConvertFrom-Json
         if ($response.ok) {
             $response
