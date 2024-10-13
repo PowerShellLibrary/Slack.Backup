@@ -1,0 +1,29 @@
+{
+	"folders": [
+		{
+			"path": "..",
+			"name": "Slack.Backup (this)"
+		},
+		{
+			"path": "C:/repo/Crypto.AES/Crypto.AES",
+			"name": "Crypto.AES"
+		},
+		{
+			"path": "C:/repo/Crypto.RSA/Crypto.RSA",
+			"name": "Crypto.RSA"
+		},
+		{
+			"path": "C:/repo/Photo.Shell/Photo.Shell",
+			"name": "Photo.Shell"
+		},
+		{
+			"path": "C:/repo/gist-job",
+			"name": "gist-job"
+		},
+		{
+			"path": "C:/repo/Slack.Backup.Internal",
+			"name": "Internal"
+		}
+	],
+	"settings": {}
+}
