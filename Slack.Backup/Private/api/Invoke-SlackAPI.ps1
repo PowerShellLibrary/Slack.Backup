@@ -39,7 +39,7 @@ function Invoke-SlackAPI {
                 [int] $delay = [int](($_.Exception.Response.Headers | Where-Object Key -eq 'Retry-After').Value[0])
                 Write-Host -Message "Retry caught, delaying $delay s"
                 Start-Sleep -Seconds $delay
-                return Invoke-SlackAPI $Method $Token $Parameters
+                return Invoke-SlackAPI -Method $Method -Token $Token -Parameters $Parameters
             }
         }
         $response = $response.Content | ConvertFrom-Json
