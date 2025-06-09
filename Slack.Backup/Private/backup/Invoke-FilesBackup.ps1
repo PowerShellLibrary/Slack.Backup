@@ -34,6 +34,11 @@ function Invoke-FilesBackup {
                 Write-Progress -Activity "File $($f.id)" -PercentComplete $perc -Status "Downloading"
                 $slackFile = Get-SlackFile -Token $Token -Uri $f.url_private
 
+                if ($slackFile.Length -eq 0) {
+                    Write-Host "File $($f.id) is empty or could not be downloaded."
+                    return
+                }
+
                 Write-Progress -Activity "File $($f.id)" -PercentComplete $perc -Status "Running FileDataProcessingPipeline"
                 $slackFile = Invoke-FileDataProcessingPipeline -SlackFile $slackFile -Metadata $f
                 [System.IO.File]::WriteAllBytes("$path.$ext", $slackFile)
